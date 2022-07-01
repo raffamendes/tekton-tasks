@@ -1,0 +1,5 @@
+interceptors:
+  - cel:
+      overlays:
+        - expression: 'body.ref.split(''/'')[2]'
+          key: newrefs

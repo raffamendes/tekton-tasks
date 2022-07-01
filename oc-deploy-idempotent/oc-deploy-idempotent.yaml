@@ -1,0 +1,24 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: oc-deploy-idempotent
+spec:
+  params:
+    - name: APP_NAME
+      type: string
+    - name: IMAGE_NAME
+      type: string
+  steps:
+    - image: 'image-registry.openshift-image-registry.svc:5000/openshift/cli:latest'
+      name: ''
+      resources: {}
+      script: >
+        dc=$(oc get dc -o go-template="{{range .items}}{{- if eq .metadata.name
+        \"$(params.APP_NAME)\" -}}{{\"found\"}}{{end}}{{end}}")
+
+        if [[ $dc == "found" ]]  then
+          oc rollout latest dc/$(params.APP_NAME)
+        else
+          oc new-app $(params.IMAGE_NAME)
+        fi
+

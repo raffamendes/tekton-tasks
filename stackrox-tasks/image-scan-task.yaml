@@ -1,0 +1,32 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: image-validation
+spec:
+  params:
+    - name: ROX_TOKEN
+      type: string
+    - name: ROX_CENTRAL
+      type: string
+    - name: IMAGE
+      type: string
+  steps:
+    - command:
+        - /roxctl
+        - '-e'
+        - $(params.ROX_CENTRAL)
+        - '--insecure-skip-tls-verify'
+        - image
+        - scan
+        - '--image'
+        - $(params.IMAGE)
+        - '--format'
+        - json
+      env:
+        - name: ROX_API_TOKEN
+          value: $(params.ROX_TOKEN)
+        - name: ROX_CENTRAL_ADDRESS
+          value: $(params.ROX_CENTRAL)
+      image: 'registry.redhat.io/rh-acs/roxctl:3.65.1'
+      name: 'image-scan'
