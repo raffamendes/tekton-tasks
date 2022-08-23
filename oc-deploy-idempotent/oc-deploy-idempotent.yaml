@@ -16,7 +16,7 @@ spec:
         dc=$(oc get dc -o go-template="{{range .items}}{{- if eq .metadata.name
         \"$(params.APP_NAME)\" -}}{{\"found\"}}{{end}}{{end}}")
 
-        if [[ $dc == "found" ]]  then
+        if [[ $dc == "found" ]]; then
           oc rollout latest dc/$(params.APP_NAME)
         else
           oc new-app $(params.IMAGE_NAME)
